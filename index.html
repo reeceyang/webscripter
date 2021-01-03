@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>Webscripter</title>
+    <link rel="stylesheet" href="https://reeceyang.github.io/webconsole/webconsole.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class="split" id="one">
+      <textarea id="editor">
+async function main() {
+  println("hello world!");
+}
+main();</textarea>
+      <br>
+      <button id="run-button">Run</button>
+      <button id="clear-button">Clear</button>
+    </div>
+    <div class="split" id="two"></div>
+  </body>
+<html>
+<script src="https://reeceyang.github.io/webconsole/webconsole.js"></script>
+<script src="split.min.js"></script>
+<script>
+addWebconsole(document.getElementById("two"));
+addDarkMode(document.body);
+// quick hack for now
+document.getElementById("toggle-theme").style.cssText = "cursor: pointer; text-decoration: underline; float: right; margin-top: 0em;";
+Split(['#one', '#two']);
+
+function run() {
+  println("===RESTARTING===");
+  eval(document.getElementById("editor").value);
+  println("======DONE======");
+}
+document.getElementById("run-button").addEventListener("click", () => {run();});
+document.getElementById("clear-button").addEventListener("click", () => {clear();});
+
+</script>
