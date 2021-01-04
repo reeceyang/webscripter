@@ -8,14 +8,12 @@
   </head>
   <body>
     <div class="split" id="one">
-      <textarea id="editor">
-async function main() {
-  println("hello world!");
-}
-main();</textarea>
-      <br>
       <button id="run-button">Run</button>
       <button id="clear-button">Clear</button>
+      <button id="share-button">Share Code Link</button>
+      <textarea id="editor">
+println("hello world!");</textarea>
+      <br>
     </div>
     <div class="split" id="two"></div>
   </body>
@@ -29,10 +27,17 @@ addDarkMode(document.body);
 document.getElementById("toggle-theme").style.cssText = "cursor: pointer; text-decoration: underline; float: right; margin-top: 0em;";
 Split(['#one', '#two']);
 
-function run() {
+let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor
+
+async function run() {
   println("===RESTARTING===");
-  eval(document.getElementById("editor").value);
+  var start = (new Date()).getTime();
+  // don't actually use eval() lol
+  var main = new AsyncFunction(document.getElementById("editor").value);
+  await main();
+  println();
   println("======DONE======");
+  println("TIME ELAPSED: ", (new Date()).getTime() - start, " ms")
 }
 document.getElementById("run-button").addEventListener("click", () => {run();});
 document.getElementById("clear-button").addEventListener("click", () => {clear();});
