@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Webscripter</title>
-    <link rel="stylesheet" href="https://reeceyang.github.io/webconsole/webconsole.css">
+    <link rel="stylesheet" href="webconsole/webconsole.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
@@ -16,25 +16,34 @@ println("hello world!");</textarea>
       <br>
     </div>
     <div class="split" id="two"></div>
+    <span id="bruh"></span>
   </body>
 <html>
-<script src="https://reeceyang.github.io/webconsole/webconsole.js"></script>
+<script src="webconsole/webconsole.js"></script>
 <script src="split.min.js"></script>
 <script>
-addWebconsole(document.getElementById("two"));
-addDarkMode(document.body);
+Webconsole.addTo(document.getElementById("two"));
+Webconsole.addDarkModeTo(document.body);
 // quick hack for now
-document.getElementById("toggle-theme").style.cssText = "cursor: pointer; text-decoration: underline; float: right; margin-top: 0em;";
+document.getElementById("toggle-theme").style.cssText = "margin-top: 0em;";
 Split(['#one', '#two']);
 
 let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor
 
 async function run() {
-  println("===RESTARTING===");
+  await println("===RESTARTING===");
   var start = (new Date()).getTime();
-  // don't actually use eval() lol
-  var main = new AsyncFunction(document.getElementById("editor").value);
-  await main();
+  var main = new AsyncFunction(document.getElementById("editor").value + `\ndocument.getElementById("bruh").click();`);
+  waited = false;
+  var bruhPressed = new Promise(function(resolve, reject) {
+    document.getElementById("bruh").addEventListener("click", function() {
+      resolve();
+      waited = true;
+    });
+  });
+  main();
+  await bruhPressed;
+  console.log(waited);
   println();
   println("======DONE======");
   println("TIME ELAPSED: ", (new Date()).getTime() - start, " ms")

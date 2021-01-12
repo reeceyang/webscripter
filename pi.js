@@ -7,5 +7,5 @@ for (var i = 1; i < loops; i++) {
     pi -= 4 * (1.0 / (2 * i - 1));
   }
   println(i, pi);
-  //await input();
+  //if (i % 100 == 0) await input();
 }
