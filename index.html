@@ -83,7 +83,7 @@ document.getElementById("get-button").addEventListener("click", () => {
     var reader = new FileReader();
     reader.onload = function () {
       var base64 = reader.result.substr(reader.result.indexOf(",") + 1);
-      var url = location.protocol + location.host + location.pathname + "#" + base64;
+      var url = location.protocol + "//" + location.host + location.pathname + "#" + base64;
       document.getElementById("url-box").value = url;
 
       document.getElementById("url-box").select();
