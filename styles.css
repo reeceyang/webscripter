@@ -31,3 +31,24 @@
   color: inherit;
   font: inherit;
 }
+
+span.message {
+  padding: 0.2em;
+  text-align: center;
+  opacity: 0;
+  animation: fadein 2s;
+  animation-fill-mode: forwards;
+  opacity: 1;
+  animation-direction: reverse;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+}
+
+span.startfadeout {
+  opacity: 1;
+}
+
+@keyframes fadein {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}

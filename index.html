@@ -5,12 +5,14 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="https://reeceyang.github.io/luce.css/luce.css"> -->
   </head>
   <body>
     <div class="split" id="one">
       <button id="run-button">Run</button>
       <button id="clear-button">Clear</button>
-      <button id="share-button">Share Code Link</button>
+      <button id="get-button">Get Code Link</button>
+      <input id="url-box"></input><span id="message-box"></span>
       <textarea id="editor">
 println("hello world!");</textarea>
       <br>
@@ -21,34 +23,88 @@ println("hello world!");</textarea>
 <html>
 <script src="webconsole/webconsole.js"></script>
 <script src="split.min.js"></script>
+<script src="lzma.js"></script>
 <script>
 Webconsole.addTo(document.getElementById("two"));
 Webconsole.addDarkModeTo(document.body);
-// quick hack for now
-document.getElementById("toggle-theme").style.cssText = "margin-top: 0em;";
 Split(['#one', '#two']);
 
-let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor
+var lzma = new LZMA("lzma_worker.js");
+var base64 = location.hash.substr(1);
+if (base64 !== "") {
+fetch("data:application/octet-stream;base64," + base64).then(r => r.blob()).then(function (blob) {
+  reader = new FileReader();
+  reader.onload = function () {
+    var compressedData = Array.from(new Uint8Array(reader.result));
+    lzma.decompress(compressedData, function(plaintext, error) {
+      if (error) {
+        alert("Failed to decompress data: " + error);
+        return;
+      }
 
-async function run() {
+      document.getElementById("editor").value = plaintext;
+    });
+  };
+  reader.readAsArrayBuffer(blob);
+});
+}
+
+let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
+document.getElementById("run-button").addEventListener("click", async function () {
   await println("===RESTARTING===");
   var start = (new Date()).getTime();
   var main = new AsyncFunction(document.getElementById("editor").value + `\ndocument.getElementById("bruh").click();`);
-  waited = false;
-  var bruhPressed = new Promise(function(resolve, reject) {
+  //waited = false;
+  var bruhPressed = new Promise(function(resolve, reject) { // this is so scuffed but it works
     document.getElementById("bruh").addEventListener("click", function() {
       resolve();
-      waited = true;
+      //waited = true;
     });
   });
   main();
   await bruhPressed;
-  console.log(waited);
+  //console.log(waited);
   println();
   println("======DONE======");
-  println("TIME ELAPSED: ", (new Date()).getTime() - start, " ms")
-}
-document.getElementById("run-button").addEventListener("click", () => {run();});
+  println("TIME ELAPSED: ", (new Date()).getTime() - start, " ms");
+});
+
+
 document.getElementById("clear-button").addEventListener("click", () => {clear();});
+document.getElementById("get-button").addEventListener("click", () => {
+  var plaintext = document.getElementById("editor").value;
+  lzma.compress(plaintext, 1, function (compressed, error) {
+    if (error) {
+      alert("Failed to compress data: " + error);
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function () {
+      var base64 = reader.result.substr(reader.result.indexOf(",") + 1);
+      var url = location.protocol + location.host + location.pathname + "#" + base64;
+      document.getElementById("url-box").value = url;
+
+      document.getElementById("url-box").select();
+      document.execCommand("copy");
+
+      // only add the message if the box is empty
+      if (document.getElementById("message-box").innerHTML == "") {
+        var defNode = document.createElement("span");
+        defNode.appendChild(document.createTextNode("copied link to clipboard!"));
+        defNode.classList.add("message");
+        defNode.classList.add("startfadeout");
+        defNode.addEventListener("animationend", () => {
+          defNode.parentNode.removeChild(defNode);
+        });
+        document.getElementById("message-box").appendChild(defNode);
+      }
+    };
+    reader.readAsDataURL(new Blob([new Uint8Array(compressed)]));
+  });
+});
+
+
 
 </script>
