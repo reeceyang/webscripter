@@ -2,6 +2,8 @@
   <head>
     <title>Webscripter</title>
     <link rel="stylesheet" href="webconsole/webconsole.css">
+    <link rel="stylesheet" href="codemirror/codemirror.css">
+    <link rel="stylesheet" href="codemirror/material-darker.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
@@ -13,14 +15,14 @@
       <button id="clear-button">Clear</button>
       <button id="get-button">Get Code Link</button>
       <input id="url-box"></input><span id="message-box"></span>
-      <textarea id="editor">
-println("hello world!");</textarea>
       <br>
     </div>
     <div class="split" id="two"></div>
     <span id="bruh"></span>
   </body>
 <html>
+<script src="codemirror/codemirror.js"></script>
+<script src="codemirror/javascript.js"></script>
 <script src="webconsole/webconsole.js"></script>
 <script src="split.min.js"></script>
 <script src="lzma.js"></script>
@@ -28,6 +30,21 @@ println("hello world!");</textarea>
 Webconsole.addTo(document.getElementById("two"));
 Webconsole.addDarkModeTo(document.body);
 Split(['#one', '#two']);
+
+var editor = CodeMirror(document.getElementById("one"), {
+  value: "function myScript(){return 100;}\n",
+  mode:  "javascript",
+  theme:  "material-darker",
+  lineNumbers: true,
+  lineWrapping: true
+});
+
+editor.setOption("extraKeys", {
+  Tab: function(cm) {
+    var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+    cm.replaceSelection(spaces);
+  }
+});
 
 var lzma = new LZMA("lzma_worker.js");
 var base64 = location.hash.substr(1);
@@ -42,7 +59,7 @@ fetch("data:application/octet-stream;base64," + base64).then(r => r.blob()).then
         return;
       }
 
-      document.getElementById("editor").value = plaintext;
+      editor.setValue(plaintext);
     });
   };
   reader.readAsArrayBuffer(blob);
@@ -54,7 +71,7 @@ let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 document.getElementById("run-button").addEventListener("click", async function () {
   await println("===RESTARTING===");
   var start = (new Date()).getTime();
-  var main = new AsyncFunction(document.getElementById("editor").value + `\ndocument.getElementById("bruh").click();`);
+  var main = new AsyncFunction(editor.getValue() + `\ndocument.getElementById("bruh").click();`);
   //waited = false;
   var bruhPressed = new Promise(function(resolve, reject) { // this is so scuffed but it works
     document.getElementById("bruh").addEventListener("click", function() {
@@ -73,7 +90,7 @@ document.getElementById("run-button").addEventListener("click", async function (
 
 document.getElementById("clear-button").addEventListener("click", () => {clear();});
 document.getElementById("get-button").addEventListener("click", () => {
-  var plaintext = document.getElementById("editor").value;
+  var plaintext = editor.getValue();
   lzma.compress(plaintext, 1, function (compressed, error) {
     if (error) {
       alert("Failed to compress data: " + error);

@@ -22,14 +22,16 @@
   height: 97vh;
 }
 
-#editor {
-  width: 100%;
+.CodeMirror {
+  width: 98%;
   padding: 0.2em;
   margin-right: 0.2em;
   height: 97vh;
-  background: inherit;
-  color: inherit;
-  font: inherit;
+  transition: 0.4s;
+}
+
+body:not(.dark) .CodeMirror  {
+  filter: invert(180);
 }
 
 span.message {
