@@ -32,7 +32,7 @@ Webconsole.addDarkModeTo(document.body);
 Split(['#one', '#two']);
 
 var editor = CodeMirror(document.getElementById("one"), {
-  value: "function myScript(){return 100;}\n",
+  value: "println(\"hello world!\");",
   mode:  "javascript",
   theme:  "material-darker",
   lineNumbers: true,
@@ -66,6 +66,30 @@ fetch("data:application/octet-stream;base64," + base64).then(r => r.blob()).then
 });
 }
 
+function updateUrl() {
+  var plaintext = editor.getValue();
+  lzma.compress(plaintext, 1, function (compressed, error) {
+    if (error) {
+      alert("Failed to compress data: " + error);
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function () {
+      var base64 = reader.result.substr(reader.result.indexOf(",") + 1);
+      location.hash = base64;
+    };
+    reader.readAsDataURL(new Blob([new Uint8Array(compressed)]));
+  });
+}
+if (base64 === "") {
+  updateUrl();
+}
+
+editor.on("change", () => {
+  updateUrl();
+});
+
 let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
 document.getElementById("run-button").addEventListener("click", async function () {
@@ -92,36 +116,22 @@ document.getElementById("run-button").addEventListener("click", async function (
 
 document.getElementById("clear-button").addEventListener("click", () => {clear();});
 document.getElementById("get-button").addEventListener("click", () => {
-  var plaintext = editor.getValue();
-  lzma.compress(plaintext, 1, function (compressed, error) {
-    if (error) {
-      alert("Failed to compress data: " + error);
-      return;
-    }
+  document.getElementById("url-box").value = location;
 
-    var reader = new FileReader();
-    reader.onload = function () {
-      var base64 = reader.result.substr(reader.result.indexOf(",") + 1);
-      var url = location.protocol + "//" + location.host + location.pathname + "#" + base64;
-      document.getElementById("url-box").value = url;
+  document.getElementById("url-box").select();
+  document.execCommand("copy");
 
-      document.getElementById("url-box").select();
-      document.execCommand("copy");
-
-      // only add the message if the box is empty
-      if (document.getElementById("message-box").innerHTML == "") {
-        var defNode = document.createElement("span");
-        defNode.appendChild(document.createTextNode("copied link to clipboard!"));
-        defNode.classList.add("message");
-        defNode.classList.add("startfadeout");
-        defNode.addEventListener("animationend", () => {
-          defNode.parentNode.removeChild(defNode);
-        });
-        document.getElementById("message-box").appendChild(defNode);
-      }
-    };
-    reader.readAsDataURL(new Blob([new Uint8Array(compressed)]));
-  });
+  // only add the message if the box is empty
+  if (document.getElementById("message-box").innerHTML == "") {
+    var defNode = document.createElement("span");
+    defNode.appendChild(document.createTextNode("copied link to clipboard!"));
+    defNode.classList.add("message");
+    defNode.classList.add("startfadeout");
+    defNode.addEventListener("animationend", () => {
+      defNode.parentNode.removeChild(defNode);
+    });
+    document.getElementById("message-box").appendChild(defNode);
+  }
 });
 
 
