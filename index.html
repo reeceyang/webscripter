@@ -69,11 +69,12 @@ fetch("data:application/octet-stream;base64," + base64).then(r => r.blob()).then
 let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
 document.getElementById("run-button").addEventListener("click", async function () {
+  document.getElementById("run-button").disabled = true;
   await println("===RESTARTING===");
   var start = (new Date()).getTime();
   var main = new AsyncFunction(editor.getValue() + `\ndocument.getElementById("bruh").click();`);
   //waited = false;
-  var bruhPressed = new Promise(function(resolve, reject) { // this is so scuffed but it works
+  var bruhPressed = new Promise(function(resolve, reject) { // HACK: this is so scuffed but it works
     document.getElementById("bruh").addEventListener("click", function() {
       resolve();
       //waited = true;
@@ -85,6 +86,7 @@ document.getElementById("run-button").addEventListener("click", async function (
   println();
   println("======DONE======");
   println("TIME ELAPSED: ", (new Date()).getTime() - start, " ms");
+  document.getElementById("run-button").disabled = false;
 });
 
 

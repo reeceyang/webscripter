@@ -11,4 +11,4 @@ Demos:
 
 - [tipcalc](https://reeceyang.github.io/webscripter/#XQAAAQD7AAAAAAAAAAA7GEqmJ+pVwqZYH5Et7XmQOLmbSxGDQii9+EEA07DP/1/0ffXLKozfu+5S2rsFmof2tE7h0Rndn1+N0hBsL6K9kHAA9E2RL92slNhA30n17wEuTPaT65JMviVYuJnTY66+i7uV7krLRNhbeVm2yLJ0pL1xsGqesIV9wGZB6v41tNbuFMSujDGmnonVWA/MgYl2eWnf/9UxJeA=)
 
-Partly inspired by [paste](https://github.com/topaz/paste). Uses [LZMA-JS](https://github.com/LZMA-JS/LZMA-JS) (© 2016 Nathan Rugg <nmrugg@gmail.com>) and [Split.js](https://split.js.org/).
+Partly inspired by [paste](https://github.com/topaz/paste). Uses [LZMA-JS](https://github.com/LZMA-JS/LZMA-JS) (© 2016 Nathan Rugg <nmrugg@gmail.com>), [CodeMirror](https://codemirror.net/), and [Split.js](https://split.js.org/).
